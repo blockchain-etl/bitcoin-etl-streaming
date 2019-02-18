@@ -36,6 +36,11 @@ spec:
             configMapKeyRef:
               name: bitcoin-etl-config
               key: GCS_BUCKET
+        - name: CHAIN
+          valueFrom:
+            configMapKeyRef:
+              name: bitcoin-etl-config
+              key: CHAIN
         resources:
           requests:
             memory: "64Mi"
@@ -61,6 +66,11 @@ spec:
         env:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/secrets/google/key.json
+        - name: PROVIDER_URI
+          valueFrom:
+            configMapKeyRef:
+              name: bitcoin-etl-config
+              key: PROVIDER_URI
         - name: PUBSUB_TOPIC
           valueFrom:
             configMapKeyRef:

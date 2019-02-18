@@ -29,7 +29,7 @@ gcloud container clusters get-credentials bitcoin-etl-streaming \
 
 ```bash
 kubectl create configmap bitcoin-etl-config \
---from-env-file=bitcoin-etl-streaming/configMaps/dev.properties
+--from-env-file=configMaps/dev.properties
 ```
 
 6. Create "bitcoin-etl-app" service account with roles:
@@ -45,7 +45,7 @@ kubectl create secret generic bitcoin-etl-app-key --from-file=key.json=$HOME/Dow
 7. Create the application:
 
 ```bash
-kubectl apply -f bitcoin-etl-streaming/kube.yml
+kubectl apply -f kube.yml
 ```
 
 8. To troubleshoot:
