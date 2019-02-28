@@ -58,6 +58,9 @@ spec:
           - "--output=$(PUBSUB_TOPIC)"
           - "--chain=$(CHAIN)"
           - "--lag=2"
+          - "--max-workers=4"
+          - "--batch-size=5"
+          - "--block-batch-size=1"
         volumeMounts:
         - name: google-cloud-key
           mountPath: /var/secrets/google
@@ -86,7 +89,7 @@ spec:
             memory: "64Mi"
             cpu: "100m"
           limits:
-            memory: "128Mi"
+            memory: "512Mi"
             cpu: "350m"
       - name: upload-last-synced-block-file
         image: google/cloud-sdk:220.0.0-alpine
