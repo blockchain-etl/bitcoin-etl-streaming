@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etl-streaming-config
+data:
+  providerUri: "http://user:pass@localhost:8332"
+  pubSubTopicPrefix: "projects/your-project/topics/crypto_dash"
+  chain: "dash"

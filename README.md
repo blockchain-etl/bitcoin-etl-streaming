@@ -20,19 +20,16 @@ gcloud container clusters get-credentials bitcoin-etl-streaming \
 --zone us-central1-a
 ```
 
-3. Create Pub/Sub topic "bitcoin_blockchain". Put it to `./configMaps/dev.properties`
+3. Create Pub/Sub topics "crypto_bitcoin.blocks" and "crypto_bitcoin.transactions". 
+Put it to `overlays/bitcoin/configMap.yaml`, `pubSubTopicPrefix` property.
 
 4. Create GCS bucket. Upload a text file with block number you want to start streaming from to 
 `gs:/<your-bucket>/bitcoin-etl/streaming/last_synced_block.txt`.
+Put your bucket name to `base/configMap.yaml`, `gcsBucket` property.
 
-5. Create a config map:
+5. Update `overlays/bitcoin/configMap.yaml`, `providerUri` property to point to your Bitcoin node.
 
-```bash
-kubectl create configmap bitcoin-etl-config \
---from-env-file=configMaps/dev.properties
-```
-
-6. Create "bitcoin-etl-app" service account with roles:
+5. Create "bitcoin-etl-app" service account with roles:
     - Pub/Sub Editor
     - Storage Object Creator
 
@@ -42,13 +39,19 @@ Download the key. Create a Kubernetes secret:
 kubectl create secret generic bitcoin-etl-app-key --from-file=key.json=$HOME/Downloads/key.json
 ```
 
-7. Create the application:
+6. Install kustomize https://github.com/kubernetes-sigs/kustomize/blob/master/docs/INSTALL.md. 
 
 ```bash
-kubectl apply -f kube.yml
+brew install kustomize
 ```
 
-8. To troubleshoot:
+Create the application:
+
+```bash
+kustomize build overlays/bitcoin | kubectl apply -f -
+```
+
+7. To troubleshoot:
 
 ```bash
 kubectl describe pods

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etl-streaming-config
+data:
+  providerUri: "http://user:pass@localhost:8332"
+  gcsBucket: "your-bucket"
+  pubSubTopicPrefix: "projects/your-project/topics/crypto_bitcoin"
+  chain: "bitcoin"
+  lagBlocks: "2"
+  maxWorkers: "4"
