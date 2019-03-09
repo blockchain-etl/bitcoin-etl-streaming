@@ -94,6 +94,21 @@ spec:
             configMapKeyRef:
               name: etl-streaming-config
               key: maxWorkers
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "file=/var/bitcoin-etl/last_synced_block.txt;
+            if [ ! -f $file ]; then echo \"File $file does not exist\" && exit 1; fi;
+            file_age=$(($(date +%s) - $(date -r $file +%s)));
+            max_age=7200;
+            echo \"$file age is $file_age seconds. Max healthy age is $max_age seconds\";
+            if [ $file_age -lt $max_age ]; then exit 0; else exit 1; fi"
+          initialDelaySeconds: 600
+          periodSeconds: 600
+          timeoutSeconds: 5
+          failureThreshold: 1
         resources:
           requests:
             memory: "64Mi"
