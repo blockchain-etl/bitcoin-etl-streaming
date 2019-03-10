@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: etl-streaming-config
 data:
-  providerUri: "http://user:pass@localhost:8332"
-  pubSubTopicPrefix: "projects/your-project/topics/crypto_bitcoin"
-  chain: "bitcoin"
+  PROVIDER_URI: "http://user:pass@localhost:8332"
+  PUB_SUB_TOPIC_PREFIX: "projects/your-project/topics/crypto_bitcoin"
+  CHAIN: "bitcoin"

@@ -21,7 +21,7 @@ spec:
         command:
         - gsutil
         - cp
-        - gs://$(gcsBucket)/$(chain)-etl/streaming/last_synced_block.txt
+        - gs://$(GCS_BUCKET)/$(CHAIN)-etl/streaming/last_synced_block.txt
         - /var/bitcoin-etl/last_synced_block.txt
         volumeMounts:
         - name: google-cloud-key
@@ -31,16 +31,16 @@ spec:
         env:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/secrets/google/key.json
-        - name: gcsBucket
+        - name: GCS_BUCKET
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: gcsBucket
-        - name: chain
+              key: GCS_BUCKET
+        - name: CHAIN
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: chain
+              key: CHAIN
         resources:
           requests:
             memory: "64Mi"
@@ -53,12 +53,12 @@ spec:
         image: blockchainetl/bitcoin-etl:1.0-streaming
         args:
           - "stream"
-          - "--provider-uri=$(providerUri)"
+          - "--provider-uri=$(PROVIDER_URI)"
           - "--last-synced-block-file=/var/bitcoin-etl/last_synced_block.txt"
-          - "--output=$(pubSubTopicPrefix)"
-          - "--chain=$(chain)"
-          - "--lag=$(lagBlocks)"
-          - "--max-workers=$(maxWorkers)"
+          - "--output=$(PUB_SUB_TOPIC_PREFIX)"
+          - "--chain=$(CHAIN)"
+          - "--lag=$(LAG_BLOCKS)"
+          - "--max-workers=$(MAX_WORKERS)"
           - "--batch-size=5"
           - "--block-batch-size=1"
         volumeMounts:
@@ -69,31 +69,31 @@ spec:
         env:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/secrets/google/key.json
-        - name: providerUri
+        - name: PROVIDER_URI
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: providerUri
-        - name: pubSubTopicPrefix
+              key: PROVIDER_URI
+        - name: PUB_SUB_TOPIC_PREFIX
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: pubSubTopicPrefix
-        - name: chain
+              key: PUB_SUB_TOPIC_PREFIX
+        - name: CHAIN
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: chain
-        - name: lagBlocks
+              key: CHAIN
+        - name: LAG_BLOCKS
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: lagBlocks
-        - name: maxWorkers
+              key: LAG_BLOCKS
+        - name: MAX_WORKERS
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: maxWorkers
+              key: MAX_WORKERS
         livenessProbe:
           exec:
             command:
@@ -125,7 +125,7 @@ spec:
         - gsutil
         - cp
         - /var/bitcoin-etl/last_synced_block.txt
-        - gs://$(gcsBucket)/$(chain)-etl/streaming/last_synced_block.txt
+        - gs://$(GCS_BUCKET)/$(CHAIN)-etl/streaming/last_synced_block.txt
         volumeMounts:
         - name: google-cloud-key
           mountPath: /var/secrets/google
@@ -134,24 +134,23 @@ spec:
         env:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/secrets/google/key.json
-        - name: gcsBucket
+        - name: GCS_BUCKET
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: gcsBucket
-        - name: chain
+              key: GCS_BUCKET
+        - name: CHAIN
           valueFrom:
             configMapKeyRef:
               name: etl-streaming-config
-              key: chain
+              key: CHAIN
         lifecycle:
           preStop:
             exec:
               command:
-              - gsutil
-              - cp
-              - /var/bitcoin-etl/last_synced_block.txt
-              - gs://$(gcsBucket)/$(chain)-etl/streaming/last_synced_block.txt
+              - /bin/sh
+              - -c
+              - gsutil cp /var/bitcoin-etl/last_synced_block.txt gs://${GCS_BUCKET}/${CHAIN}-etl/streaming/last_synced_block.txt
         resources:
           requests:
             memory: "64Mi"

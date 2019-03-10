@@ -3,9 +3,9 @@ kind: ConfigMap
 metadata:
   name: etl-streaming-config
 data:
-  providerUri: "http://user:pass@localhost:8332"
-  gcsBucket: "your-bucket"
-  pubSubTopicPrefix: "projects/your-project/topics/crypto_bitcoin"
-  chain: "bitcoin"
-  lagBlocks: "2"
-  maxWorkers: "4"
+  PROVIDER_URI: "http://user:pass@localhost:8332"
+  GCS_BUCKET: "your-bucket"
+  PUB_SUB_TOPIC_PREFIX: "projects/your-project/topics/crypto_bitcoin"
+  CHAIN: "bitcoin"
+  LAG_BLOCKS: "2"
+  MAX_WORKERS: "4"

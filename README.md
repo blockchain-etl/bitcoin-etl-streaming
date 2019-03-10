@@ -21,13 +21,13 @@ gcloud container clusters get-credentials bitcoin-etl-streaming \
 ```
 
 3. Create Pub/Sub topics "crypto_bitcoin.blocks" and "crypto_bitcoin.transactions". 
-Put it to `overlays/bitcoin/configMap.yaml`, `pubSubTopicPrefix` property.
+Put it to `overlays/bitcoin/configMap.yaml`, `PUB_SUB_TOPIC_PREFIX` property.
 
 4. Create GCS bucket. Upload a text file with block number you want to start streaming from to 
 `gs:/<your-bucket>/bitcoin-etl/streaming/last_synced_block.txt`.
-Put your bucket name to `base/configMap.yaml`, `gcsBucket` property.
+Put your bucket name to `base/configMap.yaml`, `GCS_BUCKET` property.
 
-5. Update `overlays/bitcoin/configMap.yaml`, `providerUri` property to point to your Bitcoin node.
+5. Update `overlays/bitcoin/configMap.yaml`, `PROVIDER_URI` property to point to your Bitcoin node.
 
 5. Create "bitcoin-etl-app" service account with roles:
     - Pub/Sub Editor
