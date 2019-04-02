@@ -49,7 +49,7 @@ spec:
             memory: "128Mi"
             cpu: "100m"
       containers:
-      - name: bitcoin-etl-streaming
+      - name: stream
         image: blockchainetl/bitcoin-etl:1.0-streaming
         args:
           - "stream"
@@ -111,7 +111,7 @@ spec:
           failureThreshold: 1
         resources:
           requests:
-            memory: "64Mi"
+            memory: "128Mi"
             cpu: "100m"
           limits:
             memory: "512Mi"
