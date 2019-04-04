@@ -4,11 +4,14 @@ metadata:
   name: etl-streaming
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: etl-streaming
     spec:
+      terminationGracePeriodSeconds: 30
       volumes:
       - name: google-cloud-key
         secret:
@@ -24,13 +27,9 @@ spec:
         - gs://$(GCS_BUCKET)/$(CHAIN)-etl/streaming/last_synced_block.txt
         - /var/bitcoin-etl/last_synced_block.txt
         volumeMounts:
-        - name: google-cloud-key
-          mountPath: /var/secrets/google
         - name: last-synced-block
           mountPath: /var/bitcoin-etl
         env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/secrets/google/key.json
         - name: GCS_BUCKET
           valueFrom:
             configMapKeyRef:
@@ -61,6 +60,7 @@ spec:
           - "--max-workers=$(MAX_WORKERS)"
           - "--batch-size=5"
           - "--block-batch-size=1"
+          - "--pid-file=/var/bitcoin-etl/stream.pid"
         volumeMounts:
         - name: google-cloud-key
           mountPath: /var/secrets/google
@@ -117,7 +117,7 @@ spec:
             memory: "512Mi"
             cpu: "350m"
       - name: upload-last-synced-block-file
-        image: google/cloud-sdk:220.0.0-alpine
+        image: google/cloud-sdk:241.0.0-alpine
         command:
         - watch
         - "-n"
@@ -127,13 +127,9 @@ spec:
         - /var/bitcoin-etl/last_synced_block.txt
         - gs://$(GCS_BUCKET)/$(CHAIN)-etl/streaming/last_synced_block.txt
         volumeMounts:
-        - name: google-cloud-key
-          mountPath: /var/secrets/google
         - name: last-synced-block
           mountPath: /var/bitcoin-etl
         env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/secrets/google/key.json
         - name: GCS_BUCKET
           valueFrom:
             configMapKeyRef:
@@ -150,7 +146,8 @@ spec:
               command:
               - /bin/sh
               - -c
-              - gsutil cp /var/bitcoin-etl/last_synced_block.txt gs://${GCS_BUCKET}/${CHAIN}-etl/streaming/last_synced_block.txt
+              - "while [ -f /var/bitcoin-etl/stream.pid ]; do sleep 1; done;
+              gsutil cp /var/bitcoin-etl/last_synced_block.txt gs://${GCS_BUCKET}/${CHAIN}-etl/streaming/last_synced_block.txt"
         resources:
           requests:
             memory: "64Mi"
@@ -158,4 +155,3 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
-
